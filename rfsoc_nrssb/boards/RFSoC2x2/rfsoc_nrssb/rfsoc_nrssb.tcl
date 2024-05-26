@@ -126,6 +126,7 @@ xilinx.com:ip:axi_intc:4.1\
 xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:xlconstant:1.1\
 UCSD.EDU:ip:SSBDetect_ip:1.0\
+strathsdr.org:PYNQ-SDR:ofdm_decimator:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:usp_rf_data_converter:2.6\
 xilinx.com:ip:zynq_ultra_ps_e:3.5\
@@ -235,6 +236,8 @@ proc create_root_design { parentCell } {
    CONFIG.CONST_VAL {0} \
  ] $lmk_reset_low
 
+  # Create instance: ofdm_decimator, and set properties
+  set ofdm_decimator [ create_bd_cell -type ip -vlnv strathsdr.org:PYNQ-SDR:ofdm_decimator:1.0 ofdm_decimator ]
   # Create instance: ofdm_receiver, and set properties
   set SSBDetect [ create_bd_cell -type ip -vlnv UCSD.EDU:ip:SSBDetect_ip:1.0 SSBDetect ]
 
@@ -927,13 +930,35 @@ proc create_root_design { parentCell } {
 
   # Create interface connections
   connect_bd_intf_net -intf_net adc2_clk_1 [get_bd_intf_ports adc2_clk] [get_bd_intf_pins rfdc/adc2_clk]
+  connect_bd_intf_net -intf_net axi_interconnect_hp0_M00_AXI [get_bd_intf_pins axi_interconnect_hp0/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HP0_FPD]
+  connect_bd_intf_net -intf_net axi_interconnect_hp2_M00_AXI [get_bd_intf_pins axi_interconnect_hp2/M00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/S_AXI_HP2_FPD]
   connect_bd_intf_net -intf_net dac1_clk_1 [get_bd_intf_ports dac1_clk] [get_bd_intf_pins rfdc/dac1_clk]
+  connect_bd_intf_net -intf_net ofdm_decimator_0_M_AXIS [get_bd_intf_pins ofdm_decimator/M_AXIS] [get_bd_intf_pins SSBDetect/AXI4_Stream_Slave]
+  connect_bd_intf_net -intf_net ps8_0_axi_periph_M00_AXI [get_bd_intf_pins ps8_0_axi_periph/M00_AXI] [get_bd_intf_pins rfdc/s_axi]
+  connect_bd_intf_net -intf_net ps8_0_axi_periph_M01_AXI [get_bd_intf_pins axi_intc/s_axi] [get_bd_intf_pins ps8_0_axi_periph/M01_AXI]
+  connect_bd_intf_net -intf_net ps8_0_axi_periph_M05_AXI [get_bd_intf_pins SSBDetect/AXI4_Lite] [get_bd_intf_pins ps8_0_axi_periph/M05_AXI]
+  connect_bd_intf_net -intf_net rfdc_m20_axis [get_bd_intf_pins ofdm_decimator/S_REAL_AXIS] [get_bd_intf_pins rfdc/m20_axis]
+  connect_bd_intf_net -intf_net rfdc_m21_axis [get_bd_intf_pins ofdm_decimator/S_IMAG_AXIS] [get_bd_intf_pins rfdc/m21_axis]
+  connect_bd_intf_net -intf_net rfdc_vout10 [get_bd_intf_ports vout10] [get_bd_intf_pins rfdc/vout10]
+  connect_bd_intf_net -intf_net sysref_in_1 [get_bd_intf_ports sysref_in] [get_bd_intf_pins rfdc/sysref_in]
+  connect_bd_intf_net -intf_net vin2_01_1 [get_bd_intf_ports vin2_01] [get_bd_intf_pins rfdc/vin2_01]
+  connect_bd_intf_net -intf_net zynq_ultra_ps_e_0_M_AXI_HPM0_FPD [get_bd_intf_pins ps8_0_axi_periph/S00_AXI] [get_bd_intf_pins zynq_ultra_ps_e/M_AXI_HPM0_FPD]
+
 
   # Create port connections
-  connect_bd_net -net rfdc_clk_adc2 [get_bd_pins SSBDetect/clk] [get_bd_pins SSBDetect/IPCORE_CLK] [get_bd_pins SSBDetect/AXI4_Lite_ACLK] [get_bd_pins axi_interconnect_hp0/ACLK] [get_bd_pins axi_interconnect_hp0/M00_ACLK] [get_bd_pins axi_interconnect_hp0/S00_ACLK] [get_bd_pins axi_interconnect_hp0/S01_ACLK] [get_bd_pins proc_sys_reset_clk_adc2/slowest_sync_clk] [get_bd_pins ps8_0_axi_periph/M02_ACLK] [get_bd_pins ps8_0_axi_periph/M03_ACLK] [get_bd_pins ps8_0_axi_periph/M05_ACLK] [get_bd_pins rfdc/clk_adc2] [get_bd_pins rfdc/m2_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp0_fpd_aclk]
+  connect_bd_net -net axi_intc_irq [get_bd_pins axi_intc/irq] [get_bd_pins zynq_ultra_ps_e/pl_ps_irq0]
+  connect_bd_net -net proc_sys_reset_clk_adc2_peripheral_aresetn [get_bd_pins axi_interconnect_hp0/ARESETN] [get_bd_pins axi_interconnect_hp0/M00_ARESETN] [get_bd_pins axi_interconnect_hp0/S00_ARESETN] [get_bd_pins axi_interconnect_hp0/S01_ARESETN] [get_bd_pins ofdm_decimator/aresetn] [get_bd_pins SSBDetect/AXI4_Lite_ARESETN] [get_bd_pins SSBDetect/IPCORE_RESETN] [get_bd_pins proc_sys_reset_clk_adc2/peripheral_aresetn] [get_bd_pins ps8_0_axi_periph/M02_ARESETN] [get_bd_pins ps8_0_axi_periph/M03_ARESETN] [get_bd_pins ps8_0_axi_periph/M05_ARESETN] [get_bd_pins rfdc/m2_axis_aresetn]
+  connect_bd_net -net proc_sys_reset_clk_dac1_peripheral_aresetn [get_bd_pins axi_interconnect_hp2/ARESETN] [get_bd_pins axi_interconnect_hp2/M00_ARESETN] [get_bd_pins axi_interconnect_hp2/S00_ARESETN] [get_bd_pins proc_sys_reset_clk_dac1/peripheral_aresetn] [get_bd_pins ps8_0_axi_periph/M04_ARESETN] [get_bd_pins ps8_0_axi_periph/M06_ARESETN] [get_bd_pins rfdc/s1_axis_aresetn]
+  connect_bd_net -net rfdc_clk_adc2 [get_bd_pins SSBDetect/clk] [get_bd_pins SSBDetect/IPCORE_CLK] [get_bd_pins SSBDetect/AXI4_Lite_ACLK] [get_bd_pins axi_interconnect_hp0/ACLK] [get_bd_pins axi_interconnect_hp0/M00_ACLK] [get_bd_pins axi_interconnect_hp0/S00_ACLK] [get_bd_pins axi_interconnect_hp0/S01_ACLK] [get_bd_pins ofdm_decimator/aclk] [get_bd_pins proc_sys_reset_clk_adc2/slowest_sync_clk] [get_bd_pins ps8_0_axi_periph/M02_ACLK] [get_bd_pins ps8_0_axi_periph/M03_ACLK] [get_bd_pins ps8_0_axi_periph/M05_ACLK] [get_bd_pins rfdc/clk_adc2] [get_bd_pins rfdc/m2_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp0_fpd_aclk]
   connect_bd_net -net rfdc_clk_dac1 [get_bd_pins axi_interconnect_hp2/ACLK] [get_bd_pins axi_interconnect_hp2/M00_ACLK] [get_bd_pins axi_interconnect_hp2/S00_ACLK] [get_bd_pins proc_sys_reset_clk_dac1/slowest_sync_clk] [get_bd_pins ps8_0_axi_periph/M04_ACLK] [get_bd_pins ps8_0_axi_periph/M06_ACLK] [get_bd_pins rfdc/clk_dac1] [get_bd_pins rfdc/s1_axis_aclk] [get_bd_pins zynq_ultra_ps_e/saxihp2_fpd_aclk]
+  connect_bd_net -net rst_ps8_0_99M_peripheral_aresetn [get_bd_pins axi_intc/s_axi_aresetn] [get_bd_pins ps8_0_axi_periph/ARESETN] [get_bd_pins ps8_0_axi_periph/M00_ARESETN] [get_bd_pins ps8_0_axi_periph/M01_ARESETN] [get_bd_pins ps8_0_axi_periph/S00_ARESETN] [get_bd_pins rfdc/s_axi_aresetn] [get_bd_pins rst_ps8_0_99M/peripheral_aresetn]
+  connect_bd_net -net xlconcat_0_dout [get_bd_pins axi_intc/intr] [get_bd_pins concatenate/dout]
+  connect_bd_net -net xlconstant_0_dout [get_bd_ports lmk_reset] [get_bd_pins lmk_reset_low/dout]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk0 [get_bd_pins axi_intc/s_axi_aclk] [get_bd_pins ps8_0_axi_periph/ACLK] [get_bd_pins ps8_0_axi_periph/M00_ACLK] [get_bd_pins ps8_0_axi_periph/M01_ACLK] [get_bd_pins ps8_0_axi_periph/S00_ACLK] [get_bd_pins rfdc/s_axi_aclk] [get_bd_pins rst_ps8_0_99M/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e/maxihpm0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e/pl_clk0]
+  connect_bd_net -net zynq_ultra_ps_e_0_pl_resetn0 [get_bd_pins proc_sys_reset_clk_adc2/ext_reset_in] [get_bd_pins proc_sys_reset_clk_dac1/ext_reset_in] [get_bd_pins rst_ps8_0_99M/ext_reset_in] [get_bd_pins zynq_ultra_ps_e/pl_resetn0]
   # Create address segments
+  assign_bd_address -offset 0xA0040000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs axi_intc/S_AXI/Reg] -force
+  assign_bd_address -offset 0xA00D0000 -range 0x00010000 -target_address_space [get_bd_addr_spaces zynq_ultra_ps_e/Data] [get_bd_addr_segs SSBDetect/AXI4_Lite/reg0] -force
   # Exclude Address Segments
   # Restore current instance
   current_bd_instance $oldCurInst
