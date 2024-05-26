@@ -63,6 +63,6 @@ package_installer(name = "rfsoc_nrssb",
                   author = "Himanshu Dutta",
                   email = "hdutta@ucsd.edu",
                   license = "BSD 3-Clause License",
-                  url = "https://github.com/strath-sdr/rfsoc_nrssb.git",
+                  url = "https://github.com/himanshudutta11/rfsoc_nrssb.git",
                   pynq_version = "pynq>=2.7",
                   board = os.environ['BOARD'])
