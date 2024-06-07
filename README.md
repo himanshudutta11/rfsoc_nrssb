@@ -1,3 +1,4 @@
+![image](https://github.com/himanshudutta11/rfsoc_nrssb/assets/121915091/6978d9eb-dfa8-4d92-945b-19c1431a7172)
 
 Folder organization:
 
