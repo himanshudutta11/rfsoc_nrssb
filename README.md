@@ -1,5 +1,11 @@
 
-![image](https://github.com/himanshudutta11/rfsoc_nrssb/assets/121915091/27aba886-8823-428a-b0b6-44263d8a1c18)
+Folder organization:
+
+1. IP Repo - rfsoc_nrssb/boards/ip/iprepo at main · himanshudutta11/rfsoc_nrssb (github.com)
+2. TCL scripts : rfsoc_nrssb/boards/RFSoC2x2/rfsoc_nrssb at main · himanshudutta11/rfsoc_nrssb (github.com)
+3. Bitstream - rfsoc_nrssb/boards/RFSoC2x2/rfsoc_nrssb/bitstream.zip at main · himanshudutta11/rfsoc_nrssb (github.com)
+4. Python files for PYNQ framesworks - rfsoc_nrssb/rfsoc_nrssb at main · himanshudutta11/rfsoc_nrssb (github.com)
+5. Jupyter Notebooks - rfsoc_nrssb/notebooks at main · himanshudutta11/rfsoc_nrssb (github.com)
 
 
 The steps involved:
